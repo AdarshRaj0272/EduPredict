@@ -39,3 +39,4 @@ print(classification_report(y_test, y_pred))
 
 joblib.dump(model, 'model/student_model.pkl')
 print("Model saved!")
+print("Scikit-learn version:", __import__('sklearn').__version__)
