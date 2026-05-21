@@ -4,7 +4,7 @@ import joblib
 import matplotlib.pyplot as plt
 import numpy as np
 
-st.set_page_config(page_title="EduPredict", layout="wide")
+st.set_page_config(page_title="Student Performance Predictor", layout="wide")
 
 st.markdown("""
     <style>
@@ -96,7 +96,7 @@ st.markdown("""
         font-size: 13px;
         color: #6b7280;
     }
-    .chart-title {
+    .section-title {
         font-size: 11px;
         font-weight: 600;
         color: #9ca3af;
@@ -104,6 +104,11 @@ st.markdown("""
         letter-spacing: 0.08em;
         margin-top: 1.5rem;
         margin-bottom: 0.5rem;
+    }
+    .divider {
+        border: none;
+        border-top: 1px solid #e5e7eb;
+        margin: 1.5rem 0;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -115,7 +120,7 @@ le_internet = joblib.load('model/le_internet.pkl')
 le_extra = joblib.load('model/le_extra.pkl')
 le_result = joblib.load('model/le_result.pkl')
 
-st.markdown("<h1>EduPredict</h1>", unsafe_allow_html=True)
+st.markdown("<h1>Student Performance Predictor</h1>", unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Enter student details below to predict academic outcome</div>', unsafe_allow_html=True)
 
 st.markdown('<div class="card"><div class="card-title">Personal Information</div>', unsafe_allow_html=True)
@@ -174,7 +179,45 @@ if st.button("Predict Performance"):
             </div>
         """, unsafe_allow_html=True)
 
-    st.markdown('<div class="chart-title">Feature Importance — What affects the result most?</div>', unsafe_allow_html=True)
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Student Report Card</div>', unsafe_allow_html=True)
+
+    suggestions = []
+    if study_hours < 4:
+        suggestions.append("Study hours kam hain — rozana kam se kam 4-5 ghante padhne ki koshish karo.")
+    if attendance < 75:
+        suggestions.append("Attendance 75% se kam hai — class attendance improve karo.")
+    if previous_marks < 50:
+        suggestions.append("Previous marks kam hain — weak subjects pe zyada focus karo.")
+    if extra_classes == "No":
+        suggestions.append("Extra classes join karo — doubt clear karne mein madad milegi.")
+    if internet_access == "No":
+        suggestions.append("Internet access nahi hai — library ya study center use karo online resources ke liye.")
+    if not suggestions:
+        suggestions.append("Sab kuch achha lag raha hai — aise hi mehnat karte raho!")
+
+    report_data = {
+        "Parameter": ["Study Hours/Day", "Attendance", "Previous Marks", "Extra Classes", "Internet Access", "Predicted Result"],
+        "Value": [f"{study_hours} hrs", f"{attendance}%", f"{previous_marks}/100", extra_classes, internet_access, result],
+        "Status": [
+            "Good" if study_hours >= 4 else "Low",
+            "Good" if attendance >= 75 else "Low",
+            "Good" if previous_marks >= 50 else "Low",
+            "Good" if extra_classes == "Yes" else "No",
+            "Good" if internet_access == "Yes" else "No",
+            "Pass" if result == "Pass" else "Fail"
+        ]
+    }
+
+    report_df = pd.DataFrame(report_data)
+    st.dataframe(report_df, use_container_width=True, hide_index=True)
+
+    st.markdown('<div class="section-title" style="margin-top:1rem;">Suggestions</div>', unsafe_allow_html=True)
+    for s in suggestions:
+        st.markdown(f"<p style='font-size:13px; color:#374151; padding:8px 12px; background:#f9fafb; border-radius:8px; margin-bottom:6px; border-left:3px solid #111827;'>{s}</p>", unsafe_allow_html=True)
+
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Feature Importance</div>', unsafe_allow_html=True)
 
     features = ['Age', 'Gender', 'Study Hours', 'Attendance',
                 'Previous Marks', 'Parent Education', 'Internet', 'Extra Classes']
