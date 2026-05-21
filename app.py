@@ -4,7 +4,7 @@ import joblib
 import matplotlib.pyplot as plt
 import numpy as np
 
-st.set_page_config(page_title="Student Performance Predictor", layout="wide")
+st.set_page_config(page_title="EduPredict", layout="wide")
 
 st.markdown("""
     <style>
@@ -21,16 +21,24 @@ st.markdown("""
         padding-top: 2.5rem;
     }
     h1 {
-        font-size: 26px !important;
+        font-size: 32px !important;
         font-weight: 700 !important;
         color: #111827 !important;
         text-align: center;
         margin-bottom: 4px !important;
     }
+    h3 {
+        font-size: 16px !important;
+        text-align: center;
+        color: #6b7280 !important;
+        font-weight: 400 !important;
+        margin-top: -8px !important;
+        margin-bottom: 4px !important;
+    }
     .subtitle {
         text-align: center;
-        color: #6b7280;
-        font-size: 14px;
+        color: #9ca3af;
+        font-size: 13px;
         margin-bottom: 2rem;
     }
     .card {
@@ -120,7 +128,8 @@ le_internet = joblib.load('model/le_internet.pkl')
 le_extra = joblib.load('model/le_extra.pkl')
 le_result = joblib.load('model/le_result.pkl')
 
-st.markdown("<h1>Student Performance Predictor</h1>", unsafe_allow_html=True)
+st.markdown("<h1>EduPredict</h1>", unsafe_allow_html=True)
+st.markdown("<h3>Student Performance Predictor</h3>", unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Enter student details below to predict academic outcome</div>', unsafe_allow_html=True)
 
 st.markdown('<div class="card"><div class="card-title">Personal Information</div>', unsafe_allow_html=True)
