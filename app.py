@@ -193,17 +193,17 @@ if st.button("Predict Performance"):
 
     suggestions = []
     if study_hours < 4:
-        suggestions.append("Study hours kam hain — rozana kam se kam 4-5 ghante padhne ki koshish karo.")
+        suggestions.append("Study hours are low — try to study at least 4-5 hours daily.")
     if attendance < 75:
-        suggestions.append("Attendance 75% se kam hai — class attendance improve karo.")
+        suggestions.append("Attendance is below 75% — improve your class attendance.")
     if previous_marks < 50:
-        suggestions.append("Previous marks kam hain — weak subjects pe zyada focus karo.")
+        suggestions.append("Previous marks are low — focus more on weak subjects.")
     if extra_classes == "No":
-        suggestions.append("Extra classes join karo — doubt clear karne mein madad milegi.")
+        suggestions.append("Join extra classes — it will help in clearing doubts.")
     if internet_access == "No":
-        suggestions.append("Internet access nahi hai — library ya study center use karo online resources ke liye.")
+        suggestions.append("No internet access — use library or study center for online resources.")
     if not suggestions:
-        suggestions.append("Sab kuch achha lag raha hai — aise hi mehnat karte raho!")
+        suggestions.append("Everything looks good — keep up the hard work!")
 
     report_data = {
         "Parameter": ["Study Hours/Day", "Attendance", "Previous Marks", "Extra Classes", "Internet Access", "Predicted Result"],
@@ -245,3 +245,42 @@ if st.button("Predict Performance"):
     ax.spines['bottom'].set_color('#e5e7eb')
     plt.tight_layout()
     st.pyplot(fig)
+
+st.markdown('<hr class="divider">', unsafe_allow_html=True)
+st.markdown('<div class="section-title">Batch Prediction</div>', unsafe_allow_html=True)
+st.markdown("<p style='font-size:13px; color:#6b7280; margin-bottom:1rem;'>Upload a CSV file — predict results for all students at once.</p>", unsafe_allow_html=True)
+
+uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
+
+if uploaded_file is not None:
+    batch_df = pd.read_csv(uploaded_file)
+    st.markdown('<div class="section-title">Uploaded Data</div>', unsafe_allow_html=True)
+    st.dataframe(batch_df, use_container_width=True, hide_index=True)
+
+    try:
+        batch_df['gender'] = le_gender.transform(batch_df['gender'])
+        batch_df['parent_education'] = le_parent.transform(batch_df['parent_education'])
+        batch_df['internet_access'] = le_internet.transform(batch_df['internet_access'])
+        batch_df['extra_classes'] = le_extra.transform(batch_df['extra_classes'])
+
+        X_batch = batch_df.drop(['student_id', 'final_marks', 'result'], axis=1, errors='ignore')
+        predictions = model.predict(X_batch)
+        batch_df['Predicted Result'] = le_result.inverse_transform(predictions)
+
+        st.markdown('<div class="section-title">Prediction Results</div>', unsafe_allow_html=True)
+        st.dataframe(batch_df[['student_id', 'study_hours_per_day', 'attendance_percent', 'previous_marks', 'Predicted Result']], use_container_width=True, hide_index=True)
+
+        pass_count = (batch_df['Predicted Result'] == 'Pass').sum()
+        fail_count = (batch_df['Predicted Result'] == 'Fail').sum()
+
+        col_a, col_b = st.columns(2)
+        with col_a:
+            st.markdown(f"<div style='background:#f0fdf4; border:1px solid #86efac; border-radius:10px; padding:16px; text-align:center;'><div style='font-size:22px; font-weight:700; color:#15803d;'>{pass_count}</div><div style='font-size:13px; color:#6b7280;'>Students will Pass</div></div>", unsafe_allow_html=True)
+        with col_b:
+            st.markdown(f"<div style='background:#fff1f2; border:1px solid #fda4af; border-radius:10px; padding:16px; text-align:center;'><div style='font-size:22px; font-weight:700; color:#be123c;'>{fail_count}</div><div style='font-size:13px; color:#6b7280;'>Students might Fail</div></div>", unsafe_allow_html=True)
+
+        csv = batch_df.to_csv(index=False).encode('utf-8')
+        st.download_button("Download Results as CSV", csv, "predicted_results.csv", "text/csv")
+
+    except Exception as e:
+        st.error(f"Error: {e} — CSV format is incorrect.")
