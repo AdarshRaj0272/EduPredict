@@ -194,7 +194,7 @@ if page == "Predict":
         st.markdown('<div class="section-title">Student Report Card</div>', unsafe_allow_html=True)
 
         suggestions = []
-        if study_hours < 3:
+        if study_hours < 2:
             suggestions.append("Study hours are low — try to study at least 4-5 hours daily.")
         if attendance < 75:
             suggestions.append("Attendance is below 75% — improve your class attendance.")
@@ -211,7 +211,7 @@ if page == "Predict":
             "Parameter": ["Study Hours/Day", "Attendance", "Previous Marks", "Extra Classes", "Internet Access", "Predicted Result"],
             "Value": [f"{study_hours} hrs", f"{attendance}%", f"{previous_marks}/100", extra_classes, internet_access, result],
             "Status": [
-                "Good" if study_hours >= 3 else "Low",
+                "Good" if study_hours >= 2 else "Low",
                 "Good" if attendance >= 75 else "Low",
                 "Good" if previous_marks >= 50 else "Low",
                 "Good" if extra_classes == "Yes" else "No",
