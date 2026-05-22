@@ -211,7 +211,7 @@ if page == "Predict":
             "Parameter": ["Study Hours/Day", "Attendance", "Previous Marks", "Extra Classes", "Internet Access", "Predicted Result"],
             "Value": [f"{study_hours} hrs", f"{attendance}%", f"{previous_marks}/100", extra_classes, internet_access, result],
             "Status": [
-                "Good" if study_hours >= 4 else "Low",
+                "Good" if study_hours >= 3 else "Low",
                 "Good" if attendance >= 75 else "Low",
                 "Good" if previous_marks >= 50 else "Low",
                 "Good" if extra_classes == "Yes" else "No",
